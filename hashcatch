@@ -140,7 +140,7 @@ hc_setup(){
 hc_help(){
 	banner
 	echo -e "Start hashcatch:"
-	echo -e "\tsudo ./hashcatch"
+	echo -e "\./hashcatch"
 	echo -e "Arguments:"
 	echo -e "\t./hashcatch --setup - Run setup"
 	echo -e "\t./hashcatch --help  - Print this help screen\n"
@@ -161,7 +161,7 @@ hc_run(){
 	then
 		echo -e "[-] Interface not mentioned in config file. Run with --setup and try again!"
 		exit 0
-	elif [[ `sudo aireplay-ng --test $interface 2>&1` != *"Injection is working"* ]]
+	elif [[ `aireplay-ng --test $interface 2>&1` != *"Injection is working"* ]]
 	then
 		echo -e "[-] Could not set wireless adapter to monitor mode. Run with --setup and try again!"
 		exit 0
