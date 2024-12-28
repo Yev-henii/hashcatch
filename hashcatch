@@ -129,7 +129,7 @@ hc_run(){
 			echo -en "\rStatus: ${YELLOW}Deauthenticating clients${NC}"
 			echo -en "\033[3B"
 			echo -en "\r"
-			iwconfig "$interface" channel "$channel"
+			iw dev "$interface" set channel "$channel"
 			./tools/aircrack-ng/aireplay-ng --deauth 5 -a "$bssid" "$interface" &> /dev/null &
 			sleep 1
 			echo -en "\033[3A"
