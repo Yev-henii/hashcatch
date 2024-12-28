@@ -72,14 +72,14 @@ hc_setup(){
 		fi
 	fi
 
-	sudo cp /dev/null $f_config &> /dev/null
-	sudo cp /dev/null $f_db &> /dev/null
+	cp /dev/null $f_config &> /dev/null
+	cp /dev/null $f_db &> /dev/null
 	rm -r $d_handshakes &> /dev/null
 	mkdir $d_handshakes &> /dev/null
 
 	read -p "[*] Enter your wireless interface: " interface
 	echo -e "[*] Trying to set the given interface to monitor mode"
-	while [[ `sudo aireplay-ng --test $interface 2>&1` != *"Injection is working"* ]]
+	while [[ `aireplay-ng --test $interface 2>&1` != *"Injection is working"* ]]
 	do
 		echo -e "${YELLOW}[-] Could not set the given wireless adapter to monitor mode!${NC}"
 		read -p "[-] Enter another wireless interface to try again: " interface
