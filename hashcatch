@@ -72,55 +72,6 @@ hc_run(){
 		exit 0
 	fi
 
-	if [[ `cat /etc/os-release` == *debian* ]]
-	then
-	        if [[ (`dpkg -s aircrack-ng jq 2>&1` == *"not installed"*)  || (! `command -v cap2hccapx`) || (! `command -v wlanhcxinfo`)]]
-		then
-			echo "${YELLOW}[!] The following packages are missing. Install them and try again!${NC}"
-			exit 0
-			if [[ `dpkg -s aircrack-ng 2>&1` == *"not installed"* ]]
-			then
-				echo -e "\taircrack-ng"
-				exit 0
-			elif [[ ! `command -v cap2hccapx 2>&1` ]]
-			then
-				echo -e "\thashcat-utils"
-				exit 0
-			elif [[ ! `command -v wlanhcxinfo 2>&1` ]]
-			then
-				echo -e "\thcxtools"
-				exit 0
-			elif [[ `dpkg -s jq 2>&1` == *"not installed"* ]]
-			then
-				echo -e "\tjq"
-				exit 0
-			fi
-		fi
-	elif [[ `cat /etc/os-release` == *arch* ]]
-	then
-	        if [[ `pacman -Qi aircrack-ng hashcat-utils hcxtools jq 2>&1` == *"not found"* ]]
-		then
-			echo "${YELLOW}[!] The following packages are missing. Install them and try again${NC}"
-			if [[ `pacman -Qi aircrack-ng 2>&1` == *"not found"* ]]
-			then
-				echo -e "\taircrack-ng"
-				exit 0
-			elif [[ `pacman -Qi hashcat-utils 2>&1` == *"not found"* ]]
-			then
-				echo -e "\thashcat-utils"
-				exit 0
-			elif [[ `pacman -Qi hcxtools 2>&1` == *"not found"* ]]
-			then
-				echo -e "\thcxtools"
-				exit 0
-			elif [[ `pacman -Qi jq 2>&1` == *"not found"* ]]
-			then
-				echo -e "\tjq"
-				exit 0
-			fi
-		fi
-	fi
-
 	tput civis
 	
 	banner
@@ -231,15 +182,5 @@ hc_run(){
 	done
 }
 
-if [[ $1 == "--help" ]]
-then
-	hc_help
-elif [[ $1 == "--setup" ]]
-then
-	hc_setup
-elif [[ $1 == "" ]]
-then
 	hc_run
-else
-	hc_help
 fi
